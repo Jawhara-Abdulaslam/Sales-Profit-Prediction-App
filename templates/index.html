@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توقع الربح والخسارة - Profit Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f8fa 0%, #f7f7f7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* الهيدر */
+        .main-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #27ae60;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            flex: 1;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #27ae60, #219a52);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #27ae60, #219a52);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .profit {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .loss {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .neutral {
+            background: #e2e3e5;
+            border: 1px solid #d6d8db;
+            color: #383d41;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .prediction-display {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .prediction-main {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .profit .prediction-main {
+            color: #27ae60;
+        }
+
+        .loss .prediction-main {
+            color: #e74c3c;
+        }
+
+        .neutral .prediction-main {
+            color: #7f8c8d;
+        }
+
+        .prediction-secondary {
+            font-size: 1.2em;
+            color: #7f8c8d;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #27ae60;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* الفوتر */
+        .main-footer {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            padding: 0 20px;
+        }
+
+        .footer-section h3 {
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .footer-section p {
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links a:hover {
+            color: #27ae60;
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: #27ae60;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.7;
+        }
+
+        /* قسم المميزات */
+        .features {
+            background: #f8f9fa;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header h1 {
+                font-size: 2em;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .logo-text h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <div class="logo-text">
+                    <h1>ProfitPredictor</h1>
+                    <p>ذكاء اصطناعي لتوقع الربح والخسارة</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="#"><i class="fas fa-calculator"></i> التوقع</a>
+                <a href="#"><i class="fas fa-info-circle"></i> عنا</a>
+                <a href="#"><i class="fas fa-envelope"></i> اتصل بنا</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>📊 توقع الربح والخسارة</h1>
+                <p>أدخل بيانات المنتج للحصول على توقع الربح أو الخسارة باستخدام الذكاء الاصطناعي</p>
+            </div>
+
+            <div class="form-container">
+                <form id="predictionForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="product_category"><i class="fas fa-tag"></i> فئة المنتج:</label>
+                            <select id="product_category" name="product_category" required>
+                                <option value="">اختر الفئة</option>
+                                <option value="Electronics">إلكترونيات</option>
+                                <option value="Clothing">ملابس</option>
+                                <option value="Home">أدوات منزلية</option>
+                                <option value="Beauty">منتجات تجميل</option>
+                                <option value="Sports">مستلزمات رياضية</option>
+                                <option value="Books">كتب</option>
+                                <option value="Food">مواد غذائية</option>
+                                <option value="Other">أخرى</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="unit_cost"><i class="fas fa-money-bill-wave"></i> تكلفة الوحدة ($):</label>
+                            <input type="number" id="unit_cost" name="unit_cost" step="0.01" min="0.01" value="50" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="unit_price"><i class="fas fa-tag"></i> سعر البيع ($):</label>
+                            <input type="number" id="unit_price" name="unit_price" step="0.01" min="0.01" value="75" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="units_sold"><i class="fas fa-shopping-cart"></i> الكمية المباعة:</label>
+                            <input type="number" id="units_sold" name="units_sold" min="1" value="100" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="discount_rate"><i class="fas fa-percentage"></i> نسبة الخصم (%):</label>
+                            <input type="number" id="discount_rate" name="discount_rate" step="0.1" min="0" max="100" value="10">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customer_rating"><i class="fas fa-star"></i> تقييم العملاء (1-5):</label>
+                            <select id="customer_rating" name="customer_rating" required>
+                                <option value="1">1 ⭐</option>
+                                <option value="2">2 ⭐⭐</option>
+                                <option value="3">3 ⭐⭐⭐</option>
+                                <option value="4" selected>4 ⭐⭐⭐⭐</option>
+                                <option value="5">5 ⭐⭐⭐⭐⭐</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="advertising_cost"><i class="fas fa-bullhorn"></i> تكلفة الإعلان ($):</label>
+                            <input type="number" id="advertising_cost" name="advertising_cost" step="0.01" min="0" value="500">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="season"><i class="fas fa-calendar-alt"></i> الموسم:</label>
+                            <select id="season" name="season" required>
+                                <option value="Spring">الربيع</option>
+                                <option value="Summer">الصيف</option>
+                                <option value="Fall">الخريف</option>
+                                <option value="Winter" selected>الشتاء</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="competition_level"><i class="fas fa-trophy"></i> مستوى المنافسة:</label>
+                            <select id="competition_level" name="competition_level" required>
+                                <option value="Low">منخفض</option>
+                                <option value="Medium" selected>متوسط</option>
+                                <option value="High">مرتفع</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="market_demand"><i class="fas fa-chart-bar"></i> الطلب في السوق:</label>
+                            <select id="market_demand" name="market_demand" required>
+                                <option value="Low">منخفض</option>
+                                <option value="Medium" selected>متوسط</option>
+                                <option value="High">مرتفع</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="product_age_months"><i class="fas fa-clock"></i> عمر المنتج (أشهر):</label>
+                            <input type="number" id="product_age_months" name="product_age_months" min="0" value="6">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-rocket"></i> توقع الربح/الخسارة
+                    </button>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>جاري تحليل البيانات وتوقع النتيجة...</p>
+                </div>
+
+                <div class="result" id="result">
+                    <!-- سيتم ملؤها بالنتيجة -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- قسم المميزات -->
+    <section class="features">
+        <h2 style="color: #2c3e50; margin-bottom: 20px;">لماذا تختار ProfitPredictor؟</h2>
+        <p style="color: #7f8c8d; max-width: 600px; margin: 0 auto;">نقدم لك أفضل أداة لتوقع الربح والخسارة باستخدام أحدث تقنيات الذكاء الاصطناعي</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>ذكاء اصطناعي متقدم</h3>
+                <p>نستخدم خوارزميات تعلم آلي متطورة لتحليل بيانات المبيعات وتقديم توقعات دقيقة</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>تقليل المخاطر</h3>
+                <p>ساعد في اتخاذ قرارات مستنيرة لتقليل مخاطر الخسارة وزيادة فرص الربح</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>تحليلات متعمقة</h3>
+                <p>تقديم رؤى شاملة عن العوامل المؤثرة على ربحية المنتج</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>عن ProfitPredictor</h3>
+                <p>منصة متخصصة في توقع الربح والخسارة للمنتجات باستخدام تقنيات الذكاء الاصطناعي والتعلم الآلي لمساعدة الشركات على اتخاذ قرارات أفضل.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>روابط سريعة</h3>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> الرئيسية</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> أداة التوقع</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> كيفية الاستخدام</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> الأسئلة الشائعة</a></li>
+                </ul>
+            </div>
+            
+            <!-- <div class="footer-section">
+                <h3>اتصل بنا</h3>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-envelope"></i> info@profitpredictor.com</a></li>
+                    <li><a href="#"><i class="fas fa-phone"></i> +966 123 456 789</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> الرياض، المملكة العربية السعودية</a></li>
+                </ul>
+            </div>
+        </div> -->
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Design by Jawhara Abdulsalam</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            
+            // إظهار تحميل وإخفاء النتيجة القديمة
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            resultDiv.className = 'result';
+            
+            try {
+                // جمع البيانات من النموذج
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                
+                // تحويل الأرقام
+                data.unit_cost = parseFloat(data.unit_cost);
+                data.unit_price = parseFloat(data.unit_price);
+                data.units_sold = parseInt(data.units_sold);
+                data.discount_rate = parseFloat(data.discount_rate);
+                data.customer_rating = parseInt(data.customer_rating);
+                data.advertising_cost = parseFloat(data.advertising_cost);
+                data.product_age_months = parseInt(data.product_age_months);
+                
+                console.log('📤 إرسال البيانات:', data);
+                
+                // إرسال الطلب إلى الAPI
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                // إخفاء التحميل
+                loadingDiv.style.display = 'none';
+                
+                if (result.status === 'success') {
+                    // تحديد فئة النتيجة
+                    let resultClass = 'neutral';
+                    let icon = '📊';
+                    let message = 'محايد';
+                    
+                    if (result.prediction === 'Profit') {
+                        resultClass = 'profit';
+                        icon = '💰';
+                        message = 'ربح';
+                    } else if (result.prediction === 'Loss') {
+                        resultClass = 'loss';
+                        icon = '📉';
+                        message = 'خسارة';
+                    }
+                    
+                    // عرض النتيجة بنجاح
+                    resultDiv.innerHTML = `
+                        <div class="${resultClass}">
+                            <div class="prediction-display">
+                                <h3>${icon} ${message}</h3>
+                                <div class="prediction-main">${result.prediction_probability}%</div>
+                                <div class="prediction-secondary">ثقة النموذج في التوقع</div>
+                                <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.3); border-radius: 8px;">
+                                    <h4>📈 تحليل النتيجة:</h4>
+                                    <p>${result.analysis}</p>
+                                    <p style="margin-top: 10px; font-size: 0.9em;">
+                                        الربح الصافي: $${result.net_profit} | 
+                                        هامش الربح: ${result.profit_margin}%
+                                    </p>
+                                </div>
+                                <p style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                                    ${result.model_used === 'mock' ? '⚠️ باستخدام النموذج التجريبي' : '✅ باستخدام النموذج المدرب'}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    resultDiv.className = `result ${resultClass}`;
+                } else {
+                    // عرض خطأ
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ خطأ</h3>
+                            <p>${result.message || 'حدث خطأ غير متوقع'}</p>
+                        </div>
+                    `;
+                    resultDiv.className = 'result error';
+                }
+                
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ خطأ في الاتصال</h3>
+                        <p>تعذر الاتصال بالخادم: ${error.message}</p>
+                        <p>تأكد من أن الخادم يعمل على http://localhost:5000</p>
+                    </div>
+                `;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+                
+                console.error('❌ خطأ:', error);
+            }
+        });
+
+        // تعبئة تلقائية لبيانات مثال
+        function fillExampleData() {
+            document.getElementById('product_category').value = 'Electronics';
+            document.getElementById('unit_cost').value = '50';
+            document.getElementById('unit_price').value = '75';
+            document.getElementById('units_sold').value = '100';
+            document.getElementById('discount_rate').value = '10';
+            document.getElementById('customer_rating').value = '4';
+            document.getElementById('advertising_cost').value = '500';
+            document.getElementById('season').value = 'Winter';
+            document.getElementById('competition_level').value = 'Medium';
+            document.getElementById('market_demand').value = 'Medium';
+            document.getElementById('product_age_months').value = '6';
+        }
+
+        // تعبئة مثال عند تحميل الصفحة
+        window.addEventListener('load', fillExampleData);
+    </script>
+</body>
+</html>

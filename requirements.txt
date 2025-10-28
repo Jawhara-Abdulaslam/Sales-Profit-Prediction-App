@@ -1,0 +1,12 @@
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+joblib
+pythorch
+
+
+# Flask API
+Flask
+

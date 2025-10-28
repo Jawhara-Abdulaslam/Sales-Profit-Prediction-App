@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+
+# Virtual Envs
+env/
+venv/
+.venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# ML / Data
+dataset/
+*.h5
+*.pkl
+*.pt
+*.onnx
+*.weights
+
+# Flask
+*.db
+instance/
+
+# VS Code
+.vscode/
+
+# System files
+.DS_Store
