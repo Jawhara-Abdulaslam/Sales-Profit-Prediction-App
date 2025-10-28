@@ -9,10 +9,10 @@ This project helps businesses make **data-driven decisions** to improve profitab
 ## 🚀 Features
 
 ✅ Predict sales profit with a trained ML model  
-✅ Clean and user-friendly UI (Streamlit / Flask / Web App)  
+✅ Clean and user-friendly UI ( Flask / Web App)  
 ✅ Real-time predictions  
 ✅ Input validation & business logic  
-✅ Fast and deployable on cloud services  
+  
 
 ---
 
@@ -37,7 +37,6 @@ This project helps businesses make **data-driven decisions** to improve profitab
 | Frontend | Streamlit / HTML / CSS |
 | Backend | Python, Flask (optional) |
 | ML Libraries | Scikit-learn, NumPy, Pandas |
-| Deployment | Heroku / Render / Firebase Hosting |
 | Version Control | Git & GitHub |
 
 ---
@@ -50,6 +49,7 @@ Sales-Profit-Prediction-App/
 ├── app.py               # Main web app
 ├── model.pkl            # Trained ML model
 ├── requirements.txt     # Dependencies
-├── static/              # UI assets
+├── README.md            # Documentation
 ├── templates/           # Frontend UI (Flask version)
-└── README.md            # Documentation
+└── index.html           # UI assets
+
